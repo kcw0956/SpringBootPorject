@@ -21,8 +21,7 @@ public enum Code {
 	
 	private String resultDesc; 
 	private Integer result;
-	private Integer a;
-
+	
 	Code(Integer result, String resultDesc){
 		this.result = result;
 		this.resultDesc = resultDesc;
