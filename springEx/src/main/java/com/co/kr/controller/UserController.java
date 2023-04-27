@@ -208,7 +208,7 @@ public class UserController {
 		LoginDomain loginDomain = null; //초기화
 		String IP = CommonUtils.getClientIP(request);
 		loginDomain = LoginDomain.builder()
-				.mbSeq(Integer.parseInt(loginVO.getSeq()))
+				.mbseq(Integer.parseInt(loginVO.getSeq()))
 				.mbId(loginVO.getId())
 				.mbPw(loginVO.getPw())
 				.mbLevel(loginVO.getLevel())
@@ -345,4 +345,14 @@ public class UserController {
 		mav.setViewName("index.html");
 		return mav;
 	}
+	
+	@RequestMapping(value = "bookList")
+	public ModelAndView bookList() { 
+		ModelAndView mav = new ModelAndView();
+		List<BoardListDomain> items = uploadService.boardList();
+		System.out.println("items ==> "+ items);
+		mav.addObject("items", items);
+		mav.setViewName("book/bookList.html");
+		return mav; 
+	};
 }

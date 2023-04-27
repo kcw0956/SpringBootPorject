@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title th:text="${title}"></title>
+  </head>
+  <body>
+    <h3>Student Info</h3>
+    <!-- Controller에서 담았던 이름(student)을 이용하여 객체의 필드에 접근할 수 있다. -->
+    <p th:text="${student.id}"></p>
+    <p th:text="${student.name}"></p>
+    <p th:text="${student.age}"></p>
+  </body>
+</html>
