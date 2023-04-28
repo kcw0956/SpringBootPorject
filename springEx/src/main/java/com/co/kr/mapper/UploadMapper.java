@@ -9,6 +9,7 @@ import com.co.kr.domain.BoardContentDomain;
 import com.co.kr.domain.BoardFileDomain;
 import com.co.kr.domain.BoardListDomain;
 
+
 @Mapper
 public interface UploadMapper {
 

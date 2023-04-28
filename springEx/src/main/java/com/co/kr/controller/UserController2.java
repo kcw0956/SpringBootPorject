@@ -20,9 +20,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.co.kr.domain.BoardListDomain;
+import com.co.kr.domain.BoardListDomain2;
 import com.co.kr.domain.LoginDomain;
 import com.co.kr.service.UploadService;
+import com.co.kr.service.UploadService2;
 import com.co.kr.service.UserService;
+import com.co.kr.service.UserService2;
 import com.co.kr.util.CommonUtils;
 import com.co.kr.util.Pagination;
 import com.co.kr.vo.LoginVO;
@@ -32,63 +35,23 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j 
 @RequestMapping(value = "/")
-public class UserController {
+public class UserController2 {
 	
 	@Autowired
-	private UserService userService;
+	private UserService2 userService;
 	
 	@Autowired
-	private UploadService uploadService;
-
-	@RequestMapping(value = "board")
-	public ModelAndView login(LoginVO loginDTO, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		//session 처리 
-		HttpSession session = request.getSession();
-		ModelAndView mav = new ModelAndView();
-		// 중복체크
-		Map<String, String> map = new HashMap();
-		map.put("mbId", loginDTO.getId());
-		map.put("mbPw", loginDTO.getPw());
-		
-		// 중복체크
-		int dupleCheck = userService.mbDuplicationCheck(map);
-		LoginDomain loginDomain = userService.mbGetId(map);
-		
-		if(dupleCheck == 0) {  
-			String alertText = "없는 아이디이거나 패스워드가 잘못되었습니다. 가입해주세요";
-			String redirectPath = "/main/signin";
-			CommonUtils.redirect(alertText, redirectPath, response);
-			return mav;
-		}
-
-
-		//현재아이피 추출
-		String IP = CommonUtils.getClientIP(request);
-		
-		//session 저장
-		session.setAttribute("ip",IP);
-		session.setAttribute("id", loginDomain.getMbId());
-		session.setAttribute("mbLevel", loginDomain.getMbLevel());
-				
-		List<BoardListDomain> items = uploadService.boardList();
-		System.out.println("items ==> "+ items);
-		mav.addObject("items", items);
-		
-		mav.setViewName("board/boardList.html"); 
-		
-		return mav;
-	};
+	private UploadService2 uploadService;
 
 
   // 좌측 메뉴 클릭시 보드화면 이동 (로그인된 상태)
 	@RequestMapping(value = "bdList")
 	public ModelAndView bdList() { 
 		ModelAndView mav = new ModelAndView();
-		List<BoardListDomain> items = uploadService.boardList();
+		List<BoardListDomain2> items = uploadService.boardList2();
 		System.out.println("items ==> "+ items);
 		mav.addObject("items", items);
-		mav.setViewName("board/boardList.html");
+		mav.setViewName("book/bookList.html");
 		return mav; 
 	};
 	
@@ -177,20 +140,6 @@ public class UserController {
 	};
 	
 	
-	//대시보드 리스트 보여주기
-	@GetMapping("mbEditList")
-	public ModelAndView mbListEdit(@RequestParam("mbSeq") String mbSeq, HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView();
-		// 해당리스트 가져옴
-		mav = mbListCall(request);  //리스트만 가져오기
-		Map map = new HashMap<String, String>();
-		map.put("mbSeq", mbSeq);
-		LoginDomain loginDomain = userService.mbSelectList(map);
-		System.out.println("loginDomain"+loginDomain.getMbLevel());
-		mav.addObject("item",loginDomain);
-		mav.setViewName("admin/adminEditList.html");
-		return mav; 
-	};
 	
 	
 	//수정업데이트
@@ -243,113 +192,11 @@ public class UserController {
 	};
 	
 	
-	// 어드민의 멤버추가 & 회원가입
-	@PostMapping("create")
-	public ModelAndView create(LoginVO loginVO, HttpServletRequest request,HttpServletResponse response) throws IOException {
-		
-		ModelAndView mav = new ModelAndView();
-		
-		//session 처리 
-		HttpSession session = request.getSession();
-		
-		//페이지 초기화
-		String page = (String) session.getAttribute("page");
-		if(page == null)page = "1";
-		
-		// 중복체크
-		Map<String, String> map = new HashMap();
-		map.put("mbId", loginVO.getId());
-		map.put("mbPw", loginVO.getPw());
-		
-		
-		// 중복체크
-		int dupleCheck = userService.mbDuplicationCheck(map);
-		System.out.println(dupleCheck);
-
-		if(dupleCheck > 0) { // 가입되있으면  
-			String alertText = "중복이거나 유효하지 않은 접근입니다";
-			String redirectPath = "/main";
-			System.out.println(loginVO.getAdmin());
-			if(loginVO.getAdmin() != null) {
-				redirectPath = "/main/mbList?page="+page;
-			}
-			CommonUtils.redirect(alertText, redirectPath, response);
-		}else {
-			
-			//현재아이피 추출
-			String IP = CommonUtils.getClientIP(request);
-			
-//			//자동생성 
-//			for (int i = 1; i < 32; i++) {
-//				
-//				LoginDomain loginDomain = null; //초기화
-//				loginDomain = LoginDomain.builder()
-//						.mbId(loginVO.getId()+i)
-//						.mbPw(loginVO.getId())
-//						.mbLevel("2")
-//						.mbIp(IP)
-//						.mbUse("Y")
-//						.build();
-//				
-//				// 저장
-//				userService.mbCreate(loginDomain);
-//			}
-//			mav.setViewName("redirect:/mbList?page=1");
-			
-			
-			//전체 갯수
-			int totalcount = userService.mbGetAll();
-			
-			//db insert 준비
-			LoginDomain loginDomain = LoginDomain.builder()
-					.mbId(loginVO.getId())
-					.mbPw(loginVO.getPw())
-					.mbLevel((totalcount == 0) ? "3" : "2")  // 최초가입자를 level 3 admin 부여
-					.mbIp(IP)
-					.mbUse("Y")
-					.build();
-		
-			// 저장
-			userService.mbCreate(loginDomain);
-			
-			if(loginVO.getAdmin() == null) { // 'admin'들어있을때는 alert 스킵이다
-				// session 저장 
-				session.setAttribute("ip",IP);
-				session.setAttribute("id", loginDomain.getMbId());
-				session.setAttribute("mbLevel", (totalcount == 0) ? "3" : "2");   // 최초가입자를 level 3 admin 부여
-				mav.setViewName("redirect:/bdList");
-			}else { // admin일때
-				mav.setViewName("redirect:/mbList?page=1");
-			}
-		}
-		
-		return mav;
-
-	};
-		
-		
-	// 회원가입 화면
-	@GetMapping("signin")
-    public ModelAndView signIn() throws IOException {
-		ModelAndView mav = new ModelAndView();
-        mav.setViewName("signin/signin.html"); 
-        return mav;
-    }
-	
-	//로그아웃
-	@RequestMapping("logout")
-	public ModelAndView logout(HttpServletRequest request) {
-		ModelAndView mav = new ModelAndView();
-		HttpSession session = request.getSession();
-		session.invalidate(); // 전체삭제
-		mav.setViewName("index.html");
-		return mav;
-	}
 	
 	@RequestMapping(value = "bookList")
 	public ModelAndView bookList() { 
 		ModelAndView mav = new ModelAndView();
-		List<BoardListDomain> items = uploadService.boardList();
+		List<BoardListDomain2> items = uploadService.boardList2();
 		System.out.println("items ==> "+ items);
 		mav.addObject("items", items);
 		mav.setViewName("book/bookList.html");

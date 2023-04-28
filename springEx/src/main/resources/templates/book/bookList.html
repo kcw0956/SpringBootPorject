@@ -3,15 +3,25 @@
     xmlns:layout="http://www.ultraq.net/nz/thymeleaf/layout"
     layout:decorate="~{layouts/layout}">
 
+<th:block layout:fragment="css"></th:block>
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+       history.pushState(null, null, location.href);
+       window.onpopstate = function(){
+           history.go(1);
+       }
+    </script>
+</th:block>
 
-  <head>
-    <title th:text="${title}"></title>
-  </head>
-  <body>
-    <h3>Student Info</h3>
-    <!-- Controller에서 담았던 이름(student)을 이용하여 객체의 필드에 접근할 수 있다. -->
-    <p th:text="${book.id}"></p>
-    <p th:text="${book.name}"></p>
-    <p th:text="${book.age}"></p>
-  </body>
+<head>
+    <title>책정보</title>
+</head>
+
+<div th:if=${session.id} layout:fragment="content">
+    <div class="container">
+        <th:block th:include="book/clause.html"></th:block>
+        <th:block th:include="book/list.html"></th:block>
+    </div>
+</div>
+
 </html>
