@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FileListVO2 {
+public class BookListVO {
 
 	private String isEdit;
 	private String seq;

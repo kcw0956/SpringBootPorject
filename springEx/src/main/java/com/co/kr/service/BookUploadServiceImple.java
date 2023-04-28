@@ -23,38 +23,37 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.co.kr.code.Code;
-import com.co.kr.domain.BoardContentDomain2;
-import com.co.kr.domain.BoardFileDomain2;
-import com.co.kr.domain.BoardListDomain2;
+import com.co.kr.domain.BookContentDomain;
+import com.co.kr.domain.BookFileDomain;
+import com.co.kr.domain.BookListDomain;
 import com.co.kr.exception.RequestException;
-
-import com.co.kr.mapper.UploadMapper2;
+import com.co.kr.mapper.BookUploadMapper;
 import com.co.kr.util.CommonUtils;
-import com.co.kr.vo.FileListVO2;
+import com.co.kr.vo.BookListVO;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @Transactional
-public class UploadServiceImple2 implements UploadService2 {
+public class BookUploadServiceImple implements BookUploadService {
 
 	@Autowired
-	private UploadMapper2 uploadMapper;
+	private BookUploadMapper uploadMapper;
 	
 	@Override
-	public List<BoardListDomain2> boardList2() {
+	public List<BookListDomain> boardList() {
 		// TODO Auto-generated method stub
-		return uploadMapper.boardList2();
+		return uploadMapper.boardList();
 	}
 
 	@Override
-	public int fileProcess2(FileListVO2 fileListVO, MultipartHttpServletRequest request, HttpServletRequest httpReq) {
+	public int fileProcess(BookListVO fileListVO, MultipartHttpServletRequest request, HttpServletRequest httpReq) {
 		//session 생성
 		HttpSession session = httpReq.getSession();
 		
 		//content domain 생성 
-		BoardContentDomain2 boardContentDomain = BoardContentDomain2.builder()
+		BookContentDomain boardContentDomain = BookContentDomain.builder()
 				.mbId(session.getAttribute("id").toString())
 				.bdTitle(fileListVO.getTitle())
 				.bdContent(fileListVO.getContent())
@@ -64,10 +63,10 @@ public class UploadServiceImple2 implements UploadService2 {
 					boardContentDomain.setBdSeq(Integer.parseInt(fileListVO.getSeq()));
 					System.out.println("수정업데이트");
 					// db 업데이트
-					uploadMapper.bdContentUpdate2(boardContentDomain);
+					uploadMapper.bdContentUpdate(boardContentDomain);
 				}else {	
 					// db 인서트
-					uploadMapper.contentUpload2(boardContentDomain);
+					uploadMapper.contentUpload(boardContentDomain);
 					System.out.println(" db 인서트");
 
 				}
@@ -84,7 +83,7 @@ public class UploadServiceImple2 implements UploadService2 {
 				if(fileListVO.getIsEdit() != null) { // 수정시 
 
 	
-					List<BoardFileDomain2> fileList = null;
+					List<BookFileDomain> fileList = null;
 					
 					
 					
@@ -95,18 +94,18 @@ public class UploadServiceImple2 implements UploadService2 {
 							
 							if(session.getAttribute("files") != null) {	
 
-								fileList = (List<BoardFileDomain2>) session.getAttribute("files");
+								fileList = (List<BookFileDomain>) session.getAttribute("files");
 								
-								for (BoardFileDomain2 list : fileList) {
-									list.getUpFilePath2();
-									Path filePath = Paths.get(list.getUpFilePath2());
+								for (BookFileDomain list : fileList) {
+									list.getUpFilePath();
+									Path filePath = Paths.get(list.getUpFilePath());
 							 
 							        try {
 							        	
 							            // 파일 삭제
 							            Files.deleteIfExists(filePath); // notfound시 exception 발생안하고 false 처리
 							            //삭제 
-										bdFileRemove2(list); //데이터 삭제
+										bdFileRemove(list); //데이터 삭제
 										
 							        } catch (DirectoryNotEmptyException e) {
 										throw RequestException.fire(Code.E404, "디렉토리가 존재하지 않습니다", HttpStatus.NOT_FOUND);
@@ -179,17 +178,17 @@ public class UploadServiceImple2 implements UploadService2 {
 							
 							
 							//파일 domain 생성 
-							BoardFileDomain2 boardFileDomain = BoardFileDomain2.builder()
-									.bdSeq2(bdSeq)
-									.mbId2(mbId)
-									.upOriginalFileName2(origFilename)
-									.upNewFileName2("resources/upload/"+newFileName) // WebConfig에 동적 이미지 폴더 생성 했기때문
-									.upFilePath2(targetPath.toString())
-									.upFileSize2((int)multipartFile.getSize())
+							BookFileDomain boardFileDomain = BookFileDomain.builder()
+									.bdSeq(bdSeq)
+									.mbId(mbId)
+									.upOriginalFileName(origFilename)
+									.upNewFileName("resources/upload/"+newFileName) // WebConfig에 동적 이미지 폴더 생성 했기때문
+									.upFilePath(targetPath.toString())
+									.upFileSize((int)multipartFile.getSize())
 									.build();
 							
 								// db 인서트
-								uploadMapper.fileUpload2(boardFileDomain);
+								uploadMapper.fileUpload(boardFileDomain);
 								System.out.println("upload done");
 							
 						} catch (IOException e) {
@@ -204,25 +203,25 @@ public class UploadServiceImple2 implements UploadService2 {
 	}
 
 	@Override
-	public void bdContentRemove2(HashMap<String, Object> map) {
-		uploadMapper.bdContentRemove2(map);
+	public void bdContentRemove(HashMap<String, Object> map) {
+		uploadMapper.bdContentRemove(map);
 	}
 
 	@Override
-	public void bdFileRemove2(BoardFileDomain2 boardFileDomain) {
-		uploadMapper.bdFileRemove2(boardFileDomain);
+	public void bdFileRemove(BookFileDomain boardFileDomain) {
+		uploadMapper.bdFileRemove(boardFileDomain);
 	}
 
 	// 하나만 가져오기
 	@Override
-	public BoardListDomain2 boardSelectOne2(HashMap<String, Object> map) {
-		return uploadMapper.boardSelectOne2(map);
+	public BookListDomain boardSelectOne(HashMap<String, Object> map) {
+		return uploadMapper.boardSelectOne(map);
 	}
 
 	// 하나 게시글 파일만 가져오기
 	@Override
-	public List<BoardFileDomain2> boardSelectOneFile2(HashMap<String, Object> map) {
-		return uploadMapper.boardSelectOneFile2(map);
+	public List<BookFileDomain> boardSelectOneFile(HashMap<String, Object> map) {
+		return uploadMapper.boardSelectOneFile(map);
 	}
 
 }
