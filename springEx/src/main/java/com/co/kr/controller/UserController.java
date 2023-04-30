@@ -346,13 +346,5 @@ public class UserController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "bookList")
-	public ModelAndView bookList() { 
-		ModelAndView mav = new ModelAndView();
-		List<BoardListDomain> items = uploadService.boardList();
-		System.out.println("items ==> "+ items);
-		mav.addObject("items", items);
-		mav.setViewName("book/bookList.html");
-		return mav; 
-	};
+
 }
