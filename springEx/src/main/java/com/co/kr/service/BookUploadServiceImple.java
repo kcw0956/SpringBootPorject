@@ -39,34 +39,34 @@ import lombok.extern.slf4j.Slf4j;
 public class BookUploadServiceImple implements BookUploadService {
 
 	@Autowired
-	private BookUploadMapper uploadMapper;
+	private BookUploadMapper bkuploadMapper;
 	
 	@Override
 	public List<BookListDomain> bookList() {
 		// TODO Auto-generated method stub
-		return uploadMapper.bookList();
+		return bkuploadMapper.bookList();
 	}
 
 	@Override
-	public int bookfileProcess(BookListVO fileListVO, MultipartHttpServletRequest request, HttpServletRequest httpReq) {
+	public int bookfileProcess(BookListVO bkfileListVO, MultipartHttpServletRequest request, HttpServletRequest httpReq) {
 		//session 생성
-		HttpSession session = httpReq.getSession();
+		HttpSession bksession = httpReq.getSession();
 		
 		//content domain 생성 
 		BookContentDomain boardContentDomain = BookContentDomain.builder()
-				.mbId(session.getAttribute("id").toString())
-				.bdTitle(fileListVO.getTitle())
-				.bdContent(fileListVO.getContent())
+				.mbId(bksession.getAttribute("id").toString())
+				.bdTitle(bkfileListVO.getTitle())
+				.bdContent(bkfileListVO.getContent())
 				.build();
 		
-				if(fileListVO.getIsEdit() != null) {
-					boardContentDomain.setBdSeq(Integer.parseInt(fileListVO.getSeq()));
+				if(bkfileListVO.getIsEdit() != null) {
+					boardContentDomain.setBdSeq(Integer.parseInt(bkfileListVO.getSeq()));
 					System.out.println("수정업데이트");
 					// db 업데이트
-					uploadMapper.bkContentUpdate(boardContentDomain);
+					bkuploadMapper.bkContentUpdate(boardContentDomain);
 				}else {	
 					// db 인서트
-					uploadMapper.bookcontentUpload(boardContentDomain);
+					bkuploadMapper.bookcontentUpload(boardContentDomain);
 					System.out.println(" db 인서트");
 
 				}
@@ -80,10 +80,10 @@ public class BookUploadServiceImple implements BookUploadService {
 				
 				
 				// 게시글 수정시 파일관련 물리저장 파일, db 데이터 삭제 
-				if(fileListVO.getIsEdit() != null) { // 수정시 
+				if(bkfileListVO.getIsEdit() != null) { // 수정시 
 
 	
-					List<BookFileDomain> fileList = null;
+					List<BookFileDomain> bkfileList = null;
 					
 					
 					
@@ -92,11 +92,11 @@ public class BookUploadServiceImple implements BookUploadService {
 						if(!multipartFile.isEmpty()) {   // 수정시 새로 파일 첨부될때 세션에 담긴 파일 지우기
 							
 							
-							if(session.getAttribute("files") != null) {	
+							if(bksession.getAttribute("files") != null) {	
 
-								fileList = (List<BookFileDomain>) session.getAttribute("files");
+								bkfileList = (List<BookFileDomain>) bksession.getAttribute("files");
 								
-								for (BookFileDomain list : fileList) {
+								for (BookFileDomain list : bkfileList) {
 									list.getUpFilePath();
 									Path filePath = Paths.get(list.getUpFilePath());
 							 
@@ -129,8 +129,8 @@ public class BookUploadServiceImple implements BookUploadService {
 				///////////////////////////// 새로운 파일 저장 ///////////////////////
 				
 				// 저장 root 경로만들기
-				Path rootPath = Paths.get(new File("C://").toString(),"upload", File.separator).toAbsolutePath().normalize();			
-				File pathCheck = new File(rootPath.toString());
+				Path rootPath = Paths.get("/", "Users", "kcw0956", "upload").toAbsolutePath().normalize();
+				File pathCheck = rootPath.toFile();
 				
 				// folder chcek
 				if(!pathCheck.exists()) pathCheck.mkdirs();
@@ -188,7 +188,7 @@ public class BookUploadServiceImple implements BookUploadService {
 									.build();
 							
 								// db 인서트
-								uploadMapper.bookfileUpload(boardFileDomain);
+								bkuploadMapper.bookfileUpload(boardFileDomain);
 								System.out.println("upload done");
 							
 						} catch (IOException e) {
@@ -204,24 +204,24 @@ public class BookUploadServiceImple implements BookUploadService {
 
 	@Override
 	public void bkContentRemove(HashMap<String, Object> map) {
-		uploadMapper.bkContentRemove(map);
+		bkuploadMapper.bkContentRemove(map);
 	}
 
 	@Override
 	public void bkFileRemove(BookFileDomain boardFileDomain) {
-		uploadMapper.bkFileRemove(boardFileDomain);
+		bkuploadMapper.bkFileRemove(boardFileDomain);
 	}
 
 	// 하나만 가져오기
 	@Override
 	public BookListDomain bookSelectOne(HashMap<String, Object> map) {
-		return uploadMapper.bookSelectOne(map);
+		return bkuploadMapper.bookSelectOne(map);
 	}
 
 	// 하나 게시글 파일만 가져오기
 	@Override
 	public List<BookFileDomain> bookSelectOneFile(HashMap<String, Object> map) {
-		return uploadMapper.bookSelectOneFile(map);
+		return bkuploadMapper.bookSelectOneFile(map);
 	}
 
 }

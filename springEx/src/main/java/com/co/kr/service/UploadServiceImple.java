@@ -129,8 +129,9 @@ public class UploadServiceImple implements UploadService {
 				///////////////////////////// 새로운 파일 저장 ///////////////////////
 				
 				// 저장 root 경로만들기
-				Path rootPath = Paths.get(new File("C://").toString(),"upload", File.separator).toAbsolutePath().normalize();			
-				File pathCheck = new File(rootPath.toString());
+				Path rootPath = Paths.get("/", "Users", "kcw0956", "upload").toAbsolutePath().normalize();
+				File pathCheck = rootPath.toFile();
+
 				
 				// folder chcek
 				if(!pathCheck.exists()) pathCheck.mkdirs();

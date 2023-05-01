@@ -4,29 +4,29 @@
 <mapper namespace="com.co.kr.mapper.BookUploadMapper">
 
 	<!--select all-->
-	<select id="boardList" resultType="com.co.kr.domain.BookListDomain">
+	<select id="bookList" resultType="com.co.kr.domain.BookListDomain">
 	  SELECT bd_seq, mb_id, bd_title, bd_content, bd_create_at, bd_update_at
-	  FROM jsp.board order by bd_update_at desc
+	  FROM jsp.book order by bd_update_at desc
 	</select>
 	
 	<!-- content -->
-	<select id="boardSelectOne" resultType="com.co.kr.domain.BookListDomain" parameterType="map">
+	<select id="bookSelectOne" resultType="com.co.kr.domain.BookListDomain" parameterType="map">
     SELECT bd_seq, mb_id, bd_title, bd_content, bd_create_at, bd_update_at
-    FROM jsp.board where bd_seq = #{bdSeq}
+    FROM jsp.book where bd_seq = #{bdSeq}
 	</select>
 
 	<!-- file -->
-	<select id="boardSelectOneFile" resultType="com.co.kr.domain.BookFileDomain" parameterType="map">
+	<select id="bookSelectOneFile" resultType="com.co.kr.domain.BookFileDomain" parameterType="map">
     SELECT bd_seq, mb_id, up_original_file_name, up_new_file_name, up_file_path, up_file_size
     FROM jsp.view_board where bd_seq = #{bdSeq}
 	</select>
 
 	<!-- content insert -->
-	<insert id="contentUpload" parameterType="com.co.kr.domain.BookContentDomain"
+	<insert id="bookcontentUpload" parameterType="com.co.kr.domain.BookContentDomain"
 	useGeneratedKeys="true"
         keyProperty="bdSeq" keyColumn="bd_seq">
 	
-        INSERT INTO jsp.board (
+        INSERT INTO jsp.book (
             mb_id,   
 						bd_title,                         
 						bd_content  
@@ -39,8 +39,8 @@
 	</insert>
 	
 	<!-- file insert -->
-	<insert id="fileUpload" parameterType="com.co.kr.domain.BookFileDomain">
-        INSERT INTO jsp.files (
+	<insert id="bookfileUpload" parameterType="com.co.kr.domain.BookFileDomain">
+        INSERT INTO jsp.bookFiles (
             bd_seq,
             mb_id,   
             up_original_file_name,                         
@@ -60,7 +60,7 @@
 
 		<!-- Content update -->
     <update id="bdContentUpdate" parameterType="com.co.kr.domain.BookContentDomain">
-        UPDATE jsp.board SET
+        UPDATE jsp.book SET
                 bd_seq=#{bdSeq},
                 mb_id=#{mbId},
                 bd_title=#{bdTitle},
@@ -71,7 +71,7 @@
 
     <!-- file update -->
     <update id="bdFileUpdate" parameterType="com.co.kr.domain.BookFileDomain">
-        UPDATE jsp.files SET
+        UPDATE jsp.bookFiles SET
                 bd_seq=#{bdSeq},
                 mb_id=#{mbId},
                 up_original_file_name=#{upOriginalFileName},
@@ -83,11 +83,11 @@
 
 	<!-- Content delete -->
     <delete id="bdContentRemove" parameterType="hashMap">
-       DELETE FROM jsp.board WHERE bd_seq=#{bdSeq}
+       DELETE FROM jsp.book WHERE bd_seq=#{bdSeq}
     </delete>
 	<!-- file delete -->
     <delete id="bdFileRemove" parameterType="com.co.kr.domain.BookFileDomain">
-	    DELETE FROM jsp.files WHERE up_new_file_name = #{upNewFileName}
+	    DELETE FROM jsp.bookFiles WHERE up_new_file_name = #{upNewFileName}
 	</delete>
 
 </mapper>

@@ -20,12 +20,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.co.kr.domain.BoardListDomain;
+import com.co.kr.domain.BookListDomain;
 import com.co.kr.domain.LoginDomain;
+import com.co.kr.service.BookUploadService;
 import com.co.kr.service.UploadService;
 import com.co.kr.service.UserService;
 import com.co.kr.util.CommonUtils;
 import com.co.kr.util.Pagination;
 import com.co.kr.vo.LoginVO;
+import com.co.kr.service.BookUploadService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +42,9 @@ public class UserController {
 	
 	@Autowired
 	private UploadService uploadService;
+	
+	@Autowired
+	private BookUploadService bookuploadService;
 
 	@RequestMapping(value = "board")
 	public ModelAndView login(LoginVO loginDTO, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -79,6 +85,48 @@ public class UserController {
 		
 		return mav;
 	};
+	
+	@RequestMapping(value = "book")
+	public ModelAndView bklogin(LoginVO loginDTO, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		//session 처리 
+		HttpSession bksession = request.getSession();
+		ModelAndView mav = new ModelAndView();
+		// 중복체크
+		Map<String, String> map = new HashMap();
+		map.put("mbId", loginDTO.getId());
+		map.put("mbPw", loginDTO.getPw());
+		
+		// 중복체크
+		int dupleCheck = userService.mbDuplicationCheck(map);
+		LoginDomain loginDomain = userService.mbGetId(map);
+		
+		if(dupleCheck == 0) {  
+			String alertText = "없는 아이디이거나 패스워드가 잘못되었습니다. 가입해주세요";
+			String redirectPath = "/main/signin";
+			CommonUtils.redirect(alertText, redirectPath, response);
+			return mav;
+		}
+
+
+		//현재아이피 추출
+		String IP = CommonUtils.getClientIP(request);
+		
+		//session 저장
+		bksession.setAttribute("ip",IP);
+		bksession.setAttribute("id", loginDomain.getMbId());
+		bksession.setAttribute("mbLevel", loginDomain.getMbLevel());
+				
+		List<BookListDomain> bkitems = bookuploadService.bookList();
+		System.out.println("bkitems ==> "+ bkitems);
+		mav.addObject("bkitems", bkitems);
+		
+		mav.setViewName("book/bookList.html"); 
+		
+		return mav;
+	};
+
+		
 
 
   // 좌측 메뉴 클릭시 보드화면 이동 (로그인된 상태)
@@ -91,6 +139,17 @@ public class UserController {
 		mav.setViewName("board/boardList.html");
 		return mav; 
 	};
+	
+	  // 좌측 메뉴 클릭시 보드화면 이동 (로그인된 상태)
+	@RequestMapping(value = "bkList")
+	public ModelAndView bkList() { 
+		ModelAndView mav = new ModelAndView();
+		List<BookListDomain> bkitems = bookuploadService.bookList();
+		System.out.println("bkitems ==> "+ bkitems);
+		mav.addObject("bkitems", bkitems);
+		mav.setViewName("book/bookList.html");
+		return mav; 
+	};	
 	
 	
 	

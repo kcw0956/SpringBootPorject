@@ -6,7 +6,7 @@
     </button>
 </div>
 
-<div class="title" style="color:#00a2be">책 리스트</div>
+<div class="title" style="color:#00a2be">보드 리스트</div>
 <form role="form" th:object=${fileListVO} th:action="@{bkeditSave}" method="post" enctype="multipart/form-data">
     <div class="section form">
        <table>
@@ -34,7 +34,7 @@
                <th><label for="file">첨부파일</label></th>
                 <td>
                     <input type="file" id="file" name="files" multiple />
-                    <span style="color: #00a2be" th:text="'*새로 파일첨부시 기존 파일은 삭제됩니다.(첨부된 파일 : '+ ${fileLen} + '개)'"></span>
+                    <span style="color: #00a2be" th:text="'*새로 파일첨부시 기존 파일은 삭제됩니다.(첨부된 파일 : '+ ${bkfileLen} + '개)'"></span>
                 </td>
             </tr>
         </tbody>
