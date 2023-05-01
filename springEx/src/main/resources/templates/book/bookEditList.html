@@ -17,7 +17,7 @@
     <title>책정보</title>
 </head>
 
-<div th:if=${session.id} layout:fragment="content">
+<div th:if=${bksession.id} layout:fragment="content">
     <div class="container">
         <th:block th:include="book/clauseEdit.html"></th:block>
         <th:block th:include="book/list.html"></th:block>

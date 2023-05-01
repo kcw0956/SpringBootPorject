@@ -60,7 +60,7 @@ public class BookController {
 		public ModelAndView bkSelectOneCall(@ModelAttribute("fileListVO") BookListVO fileListVO, String bdSeq, HttpServletRequest request) {
 			ModelAndView mav = new ModelAndView();
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			HttpSession session = request.getSession();
+			HttpSession bksession = request.getSession();
 			
 			map.put("bdSeq", Integer.parseInt(bdSeq));
 			BookListDomain boardListDomain =bookuploadService.bookSelectOne(map);
@@ -75,7 +75,7 @@ public class BookController {
 			mav.addObject("files", fileList);
 
 			//삭제시 사용할 용도
-			session.setAttribute("files", fileList);
+			bksession.setAttribute("files", fileList);
 			return mav;
 			}
 			//detail
@@ -94,7 +94,7 @@ public class BookController {
 				ModelAndView mav = new ModelAndView();
 
 				HashMap<String, Object> map = new HashMap<String, Object>();
-				HttpSession session = request.getSession();
+				HttpSession bksession = request.getSession();
 				
 				map.put("bdSeq", Integer.parseInt(bdSeq));
 				BookListDomain boardListDomain =bookuploadService.bookSelectOne(map);
@@ -134,14 +134,14 @@ public class BookController {
 			}
 			
 			@GetMapping("bkremove")
-			public ModelAndView bkmbRemove(@RequestParam("bdSeq") String bdSeq, HttpServletRequest request) throws IOException {
+			public ModelAndView bk_mbRemove(@RequestParam("bdSeq") String bdSeq, HttpServletRequest request) throws IOException {
 				ModelAndView mav = new ModelAndView();
 				
-				HttpSession session = request.getSession();
+				HttpSession bksession = request.getSession();
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				List<BookFileDomain> fileList = null;
-				if(session.getAttribute("files") != null) {						
-					fileList = (List<BookFileDomain>) session.getAttribute("files");
+				if(bksession.getAttribute("files") != null) {						
+					fileList = (List<BookFileDomain>) bksession.getAttribute("files");
 				}
 
 				map.put("bdSeq", Integer.parseInt(bdSeq));
@@ -168,7 +168,7 @@ public class BookController {
 				}
 
 				//세션해제
-				session.removeAttribute("files"); // 삭제
+				bksession.removeAttribute("files"); // 삭제
 				mav = bkListCall();
 				mav.setViewName("book/bookList.html");
 				
@@ -179,8 +179,8 @@ public class BookController {
 		//리스트 가져오기 따로 함수뺌
 		public ModelAndView bkListCall() {
 			ModelAndView mav = new ModelAndView();
-			List<BookListDomain> items = bookuploadService.bookList();
-			mav.addObject("items", items);
+			List<BookListDomain> bkitems = bookuploadService.bookList();
+			mav.addObject("items", bkitems);
 			return mav;
 		}
 		
@@ -188,9 +188,9 @@ public class BookController {
 		@RequestMapping(value = "bkList")
 		public ModelAndView bkList() { 
 			ModelAndView mav = new ModelAndView();
-			List<BookListDomain> items = bookuploadService.bookList();
-			System.out.println("items ==> "+ items);
-			mav.addObject("items", items);
+			List<BookListDomain> bkitems = bookuploadService.bookList();
+			System.out.println("items ==> "+ bkitems);
+			mav.addObject("items", bkitems);
 			mav.setViewName("book/bookList.html");
 			return mav; 
 		};

@@ -1,13 +1,13 @@
-<div  class="userInfo" th:if=${session.id}>
-    <span th:text="${session.id}"></span><span> 님 / </span>
-    <span th:text="${session.mbLevel}"></span><span> 레벨</span>
+<div  class="userInfo" th:if=${bksession.id}>
+    <span th:text="${bksession.id}"></span><span> 님 / </span>
+    <span th:text="${bksession.mbLevel}"></span><span> 레벨</span>
     <button type="button">
         <a th:href="@{logout}" style="color: #fff">로그아웃</a>
     </button>
 </div>
 
 <div class="title" style="color:#00a2be">책 리스트</div>
-<form role="form" th:object=${fileListVO} th:action="@{editSave}" method="post" enctype="multipart/form-data">
+<form role="form" th:object=${fileListVO} th:action="@{bkeditSave}" method="post" enctype="multipart/form-data">
     <div class="section form">
        <table>
         <colgroup>

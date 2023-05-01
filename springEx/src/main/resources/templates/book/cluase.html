@@ -1,6 +1,6 @@
-<div class="userInfo" th:if="${session.id}">
-    <span th:text="${session.id}"></span><span> 님 / </span>
-    <span th:text="${session.mbLevel}"></span><span> 레벨</span>
+<div class="userInfo" th:if="${bksession.id}">
+    <span th:text="${bksession.id}"></span><span> 님 / </span>
+    <span th:text="${bksession.mbLevel}"></span><span> 레벨</span>
     <button type="button">
         <a th:href="@{/logout}" style="color: #fff">로그아웃</a>
     </button>
